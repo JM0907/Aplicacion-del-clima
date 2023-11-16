@@ -1,0 +1,3 @@
+https://api.openweathermap.org/data/2.5/weather?q=Guayaquil&appid=d940d7c7407a1d1756c0ade7fddc3ffd&lang=español&units=metric
+pip install python-dotenv
+pip install requests
