@@ -2,25 +2,25 @@ from flask import Flask,render_template
 import requests
 from dotenv import load_dotenv,dotenv_values
 app=Flask(__name__)
-
+load_dotenv('.env')
 config = dotenv_values('.env')
 
 app = Flask (__name__)
 def get_weather_data (city):
     API_KEY = config['API_KEY']
-    url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang&appid={API_KEY}'
+    url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=es&appid={API_KEY}'
     r = requests.get(url).json()
     print(r)
     return r
 
 @app.route('/prueba')
 def prueba():
-    clima=get_weather_data('london')
+    clima=get_weather_data('manta')
     temperatura=str(clima['main']['temp'])
     descripcion= str(clima['weather'][0]['description'])
     icono=str(clima['weather'][0]['icon'])
     r_json={
-        'ciudad': 'london',
+        'ciudad': 'manta',
         'temperatura':temperatura,
         'descripcion': descripcion,
         'icono': icono
@@ -48,8 +48,6 @@ def clima():
 
 if __name__ == '__main__':
     app.run(debug = True)
-
-
 
 
 
