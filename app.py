@@ -1,26 +1,33 @@
 from flask import Flask,render_template
 import requests
 from dotenv import load_dotenv,dotenv_values
+from sqlalchemy import create_engine, MetaData, Table, column, Integer, String, Nullable
 app=Flask(__name__)
-load_dotenv('.env')
+
 config = dotenv_values('.env')
+
+metaData=MetaData
+
+cities= Table("cities", MetaData, 
+              column('id',Integer(),primary_key=True,autoincrement=True),
+              column('id', String(100),Nullable=False,unique=True))
 
 app = Flask (__name__)
 def get_weather_data (city):
     API_KEY = config['API_KEY']
-    url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=es&appid={API_KEY}'
+    url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang&appid={API_KEY}'
     r = requests.get(url).json()
     print(r)
     return r
 
 @app.route('/prueba')
 def prueba():
-    clima=get_weather_data('manta')
+    clima=get_weather_data('london')
     temperatura=str(clima['main']['temp'])
     descripcion= str(clima['weather'][0]['description'])
     icono=str(clima['weather'][0]['icon'])
     r_json={
-        'ciudad': 'manta',
+        'ciudad': 'london',
         'temperatura':temperatura,
         'descripcion': descripcion,
         'icono': icono
@@ -48,6 +55,66 @@ def clima():
 
 if __name__ == '__main__':
     app.run(debug = True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
