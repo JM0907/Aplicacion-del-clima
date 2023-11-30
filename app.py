@@ -1,4 +1,4 @@
-|from flask import Flask,render_template
+from flask import Flask,render_template
 import requests
 from dotenv import load_dotenv,dotenv_values
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
