@@ -1,16 +1,17 @@
-from flask import Flask,render_template
+|from flask import Flask,render_template
 import requests
 from dotenv import load_dotenv,dotenv_values
-from sqlalchemy import create_engine, MetaData, Table, column, Integer, String, Nullable
-app=Flask(__name__)
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
+
+metaData=MetaData()
+
+cities= Table("cities", metaData, 
+              Column('id',Integer(),primary_key=True,autoincrement=True),
+              Column('nombre', String(100),unique=True))
 
 config = dotenv_values('.env')
-
-metaData.MetaData()
-
-cities= Table("cities", MetaData, 
-              column('id',Integer(),primary_key=True,autoincrement=True),
-              column('id', String(100),Nullable=False,unique=True))
+app=Flask(__name__)
+engine = create_engine("sqlite:///weather.db")
 
 app = Flask (__name__)
 def get_weather_data (city):
@@ -55,6 +56,153 @@ def clima():
 
 if __name__ == '__main__':
     app.run(debug = True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
