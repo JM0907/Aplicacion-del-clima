@@ -3,17 +3,27 @@ import requests
 from dotenv import load_dotenv,dotenv_values
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 
-metaData=MetaData()
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped,mapped_column 
 
-cities= Table("cities", metaData, 
-              Column('id',Integer(),primary_key=True,autoincrement=True),
-              Column('nombre', String(100),unique=True))
+
 
 config = dotenv_values('.env')
 app=Flask(__name__)
-engine = create_engine("sqlite:///weather.db")
+app.cong["SQLALCHEMY_DATABASE_URI"] = "sqlite:///weather.sqlite"
+
+db = SQLAlchemy(app)
+
+class City(db.Model):
+    id: Mapped [int]= mapped_column(db.Integer, primary_key=True, autoincrement=True)
+    name: Mapped [str] = mapped_column(db.String, unique=True, nullable=False)
+with app.app_context():
+    db.create_all()
 
 app = Flask (__name__)
+
+
 def get_weather_data (city):
     API_KEY = config['API_KEY']
     url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang&appid={API_KEY}'
@@ -21,8 +31,20 @@ def get_weather_data (city):
     print(r)
     return r
 
-@app.route('/prueba')
-def prueba():
+
+@app.route('/clima', methods=['GET', 'POST'])
+def clima():
+    if request.method == 'POST':
+        new_city = requests.form.get('city') 
+        if new_city:
+            obj=city(name=new_city)
+            db.session.add(obj)
+            db.session.commit()
+
+for city in cities:
+    r=get_weather_data(city.name)
+
+
     clima=get_weather_data('london')
     temperatura=str(clima['main']['temp'])
     descripcion= str(clima['weather'][0]['description'])
@@ -56,12 +78,6 @@ def clima():
 
 if __name__ == '__main__':
     app.run(debug = True)
-
-
-
-
-
-
 
 
 
