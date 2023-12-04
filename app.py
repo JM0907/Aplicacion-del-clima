@@ -1,497 +1,75 @@
-from flask import Flask,render_template
-import requests
-from dotenv import load_dotenv,dotenv_values
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
+from flask import Flask,render_template, request, url_for,redirect
+import requests 
+from dotenv import load_dotenv,dotenv_values 
 
+# primero se instala la libreria  pip install Flask-SQLAlchemy
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped,mapped_column 
-
-
+from sqlalchemy.orm import Mapped, mapped_column
 
 config = dotenv_values('.env')
-app=Flask(__name__)
-app.cong["SQLALCHEMY_DATABASE_URI"] = "sqlite:///weather.sqlite"
+app = Flask(__name__)
 
+# Creamos la cadena de conecxion
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///weather.sqlite"
+
+# Vinculamos la base de datos con la app
 db = SQLAlchemy(app)
 
+# Creamos el modelo
 class City(db.Model):
-    id: Mapped [int]= mapped_column(db.Integer, primary_key=True, autoincrement=True)
-    name: Mapped [str] = mapped_column(db.String, unique=True, nullable=False)
+    id: Mapped[int] = mapped_column(db.Integer, primary_key=True,autoincrement=True)
+    name: Mapped[str] = mapped_column(db.String, unique=True, nullable=False)
+
+# con esta sentencia se crea las tablas 
 with app.app_context():
     db.create_all()
 
-app = Flask (__name__)
-
-
-def get_weather_data (city):
+def get_weather_data(city):
     API_KEY = config['API_KEY']
-    url = f'https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang&appid={API_KEY}'
+    url = f'http://api.openweathermap.org/data/2.5/weather?q={ city }&units=metric&lang=es&appid={API_KEY}'
     r = requests.get(url).json()
-    print(r)
     return r
 
+@app.route('/about')
+def about():
+    return render_template('.html')
 
-@app.route('/clima', methods=['GET', 'POST'])
+# pongo los metodos disponibles
+@app.route('/clima', methods=['GET','POST'])
 def clima():
-    if request.method == 'POST':
-        new_city = requests.form.get('city') 
+    # Si es post es que pulson el boton Agregar Ciudad
+    if request.method == 'POST' :
+        new_city = request.form.get('city')
         if new_city:
-            obj=city(name=new_city)
+            obj = City(name=new_city)
             db.session.add(obj)
             db.session.commit()
 
-for city in cities:
-    r=get_weather_data(city.name)
+    # llamo a todas las ciudades select * from city
+    cities = City.query.all()
+    weather_data = []
+
+    for city in cities:
+        r=get_weather_data(city.name)
+        weather = {
+                'city' : city.name,
+                'temperature' : r['main']['temp'],
+                'description' : r['weather'][0]['description'],
+                'icon' : r['weather'][0]['icon'],
+                }
+        weather_data.append(weather)
+    
+    return render_template('weather.html',weather_data=weather_data)
 
 
-    clima=get_weather_data('london')
-    temperatura=str(clima['main']['temp'])
-    descripcion= str(clima['weather'][0]['description'])
-    icono=str(clima['weather'][0]['icon'])
-    r_json={
-        'ciudad': 'london',
-        'temperatura':temperatura,
-        'descripcion': descripcion,
-        'icono': icono
-        }
-    return render_template('weather.html', clima = r_json)
-   
-
-
-
-@app.route('/about')
-def hello_CV():
-    return render_template('CV.html')
+@app.route('/delete_city/<name>')
+def delete_city(name):
+    city= City.query.filter_by(name=name).first()
+    db.session.delete(city)
+    db.session.commit()
+    return redirect(url_for('clima'))
 
 
 if __name__ == '__main__':
-    app.run(debug = True)
-
-@app.route('/clima')
-def clima_page():
-    return render_template('resultado.json')
-
-@app.route('/clima')
-def clima():
-    return 'CLIMA'
-
-if __name__ == '__main__':
-    app.run(debug = True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    app.run(debug=True)
