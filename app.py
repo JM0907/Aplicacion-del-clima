@@ -17,9 +17,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///weather.sqlite"
 db = SQLAlchemy(app)
 
 # Creamos el modelo
-class City(db.Model):
+class Pokedex(db.Model):
     id: Mapped[int] = mapped_column(db.Integer, primary_key=True,autoincrement=True)
-    name: Mapped[str] = mapped_column(db.String, unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(db.String,nullable=False)
 
 # con esta sentencia se crea las tablas 
 with app.app_context():
